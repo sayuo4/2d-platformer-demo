@@ -1,0 +1,89 @@
+[gd_scene load_steps=12 format=3 uid="uid://ducp7rsjpf40n"]
+
+[ext_resource type="Script" uid="uid://spewh8xv7lts" path="res://src/player/player.gd" id="1_4anbu"]
+[ext_resource type="Script" uid="uid://bwbxypkqm7bgl" path="res://src/state_machine/state_machine.gd" id="2_rxibo"]
+[ext_resource type="Script" uid="uid://btp87202ddbxl" path="res://src/player/states/air_entry_state.gd" id="3_x42xx"]
+[ext_resource type="Script" uid="uid://dx15tnwh62i1l" path="res://src/player/states/fall_state.gd" id="4_l271a"]
+[ext_resource type="Script" uid="uid://cl2swaeebfu0s" path="res://src/player/states/jump_state.gd" id="5_8ydov"]
+[ext_resource type="Script" uid="uid://b6w2sn3ikefko" path="res://src/player/states/floor_entry_state.gd" id="6_ylhto"]
+[ext_resource type="Script" uid="uid://m06e3ohv0ud1" path="res://src/player/states/idle_state.gd" id="7_cwolq"]
+[ext_resource type="Script" uid="uid://bgrdchyvffn8v" path="res://src/player/states/run_state.gd" id="8_2smqc"]
+
+[sub_resource type="BoxMesh" id="BoxMesh_qnmj6"]
+size = Vector3(48, 64, 1)
+
+[sub_resource type="BoxMesh" id="BoxMesh_4anbu"]
+size = Vector3(16, 16, 1)
+
+[sub_resource type="RectangleShape2D" id="RectangleShape2D_qnmj6"]
+size = Vector2(44, 62)
+
+[node name="Player" type="CharacterBody2D"]
+script = ExtResource("1_4anbu")
+max_speed = 450.0
+max_h_velocity_ratio = 3.0
+running_acc = 40.0
+running_dec = 44.0
+jumping_acc = 34.0
+jumping_dec = 32.0
+falling_acc = 32.0
+falling_dec = 30.0
+jump_not_held_gravity_ratio = 1.6
+down_held_gravity_ratio = 2.0
+gravity_limit = 1000.0
+down_held_gravity_limit_ratio = 1.2
+jump_height = 112.0
+jump_time_to_peak = 0.4
+jump_time_to_land = 0.3
+max_up_velocity_ratio = 3.0
+metadata/_edit_group_ = true
+
+[node name="Shape" type="Node2D" parent="."]
+
+[node name="Body" type="MeshInstance2D" parent="Shape"]
+position = Vector2(0, -32)
+mesh = SubResource("BoxMesh_qnmj6")
+
+[node name="LeftEye" type="MeshInstance2D" parent="Shape"]
+self_modulate = Color(0, 0, 0, 1)
+position = Vector2(19, -44)
+mesh = SubResource("BoxMesh_4anbu")
+
+[node name="RightEye" type="MeshInstance2D" parent="Shape"]
+self_modulate = Color(0, 0, 0, 1)
+position = Vector2(-5, -44)
+mesh = SubResource("BoxMesh_4anbu")
+
+[node name="CollisionShape2D" type="CollisionShape2D" parent="."]
+position = Vector2(0, -31)
+shape = SubResource("RectangleShape2D_qnmj6")
+
+[node name="StateMachine" type="Node" parent="." node_paths=PackedStringArray("target_node", "default_state")]
+script = ExtResource("2_rxibo")
+target_node = NodePath("..")
+default_state = NodePath("AirEntryState")
+metadata/_custom_type_script = "uid://bwbxypkqm7bgl"
+
+[node name="AirEntryState" type="Node" parent="StateMachine"]
+script = ExtResource("3_x42xx")
+metadata/_custom_type_script = "uid://btp87202ddbxl"
+
+[node name="FallState" type="Node" parent="StateMachine/AirEntryState"]
+script = ExtResource("4_l271a")
+metadata/_custom_type_script = "uid://dx15tnwh62i1l"
+
+[node name="JumpState" type="Node" parent="StateMachine/AirEntryState"]
+script = ExtResource("5_8ydov")
+metadata/_custom_type_script = "uid://cl2swaeebfu0s"
+
+[node name="FloorEntryState" type="Node" parent="StateMachine"]
+script = ExtResource("6_ylhto")
+metadata/_custom_type_script = "uid://b6w2sn3ikefko"
+
+[node name="IdleState" type="Node" parent="StateMachine/FloorEntryState"]
+script = ExtResource("7_cwolq")
+metadata/_custom_type_script = "uid://m06e3ohv0ud1"
+
+[node name="RunState" type="Node" parent="StateMachine/FloorEntryState"]
+script = ExtResource("8_2smqc")
+metadata/_custom_type_script = "uid://bgrdchyvffn8v"
