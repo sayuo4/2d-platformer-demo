@@ -1,6 +1,9 @@
 class_name WallJumpState
 extends PlayerState
 
+func _enter(_previous_state: State) -> void:
+	player.stop_jump_timers()
+
 func _physics_update(delta: float) -> void:
 	player.apply_gravity(delta)
 	player.apply_movement(player.wall_jumping_acc, player.calculate_wall_jumping_dec())

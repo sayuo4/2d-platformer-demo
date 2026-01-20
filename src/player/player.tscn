@@ -117,6 +117,30 @@ metadata/_custom_type_script = "uid://crbn04ab1d1vk"
 
 [node name="Timers" type="Node" parent="."]
 
+[node name="JumpCoyote" type="Timer" parent="Timers"]
+unique_name_in_owner = true
+process_callback = 0
+wait_time = 0.1
+one_shot = true
+
+[node name="JumpBuffer" type="Timer" parent="Timers"]
+unique_name_in_owner = true
+process_callback = 0
+wait_time = 0.1
+one_shot = true
+
+[node name="WallJumpCoyote" type="Timer" parent="Timers"]
+unique_name_in_owner = true
+process_callback = 0
+wait_time = 0.1
+one_shot = true
+
+[node name="WallJumpBuffer" type="Timer" parent="Timers"]
+unique_name_in_owner = true
+process_callback = 0
+wait_time = 0.1
+one_shot = true
+
 [node name="DashCooldown" type="Timer" parent="Timers"]
 unique_name_in_owner = true
 process_callback = 0
@@ -128,3 +152,6 @@ unique_name_in_owner = true
 process_callback = 0
 wait_time = 0.1
 one_shot = true
+
+[connection signal="wall_entered" from="." to="." method="_on_wall_entered"]
+[connection signal="wall_exited" from="." to="." method="_on_wall_exited"]

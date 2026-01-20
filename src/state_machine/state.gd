@@ -10,13 +10,13 @@ var _switch_state_callable: Callable
 func is_active() -> bool:
 	return _is_active_callable.call()
 
-func force_switch_to(state_name: StringName) -> void:
-	_switch_state_callable.call(state_name)
+func force_switch_to(state_name: StringName, pass_as_previous: State = null) -> void:
+	_switch_state_callable.call(state_name, pass_as_previous)
 
 ## Switches to the given state at the end of the current frame if this state is active.
-func switch_to(state_name: StringName) -> void:
+func switch_to(state_name: StringName, pass_as_previous: State = null) -> void:
 	if is_active():
-		force_switch_to.call_deferred(state_name)
+		force_switch_to.call_deferred(state_name, pass_as_previous)
 
 func force_deactivate() -> void:
 	_deactivate_state_callable.call()

@@ -1,6 +1,9 @@
 class_name Player
 extends CharacterBody2D
 
+signal wall_entered
+signal wall_exited
+
 @export var flip_h: bool: set = set_flip_h
 
 @export_group("Horizontal Movement")
@@ -51,6 +54,12 @@ extends CharacterBody2D
 @export_range(0.0, 1.0) var after_dash_gravity_ratio: float
 
 var dash_allowed: bool = false
+var _on_wall: bool = false: # This variable mustn't be edited manually
+	set(value):
+		if value != _on_wall:
+			(wall_entered if value else wall_exited).emit()
+		
+		_on_wall = value
 
 @onready var jump_velocity: float = -(2.0 * jump_height) / jump_time_to_peak
 @onready var max_up_velocity: float = jump_velocity * max_up_velocity_ratio
@@ -60,8 +69,16 @@ var dash_allowed: bool = false
 
 @onready var shape: Node2D = $Shape as Node2D
 @onready var state_machine: StateMachine = $StateMachine as StateMachine
+
+@onready var jump_coyote_timer: Timer = %JumpCoyote as Timer
+@onready var jump_buffer_timer: Timer = %JumpBuffer as Timer
+@onready var wall_jump_coyote_timer: Timer = %WallJumpCoyote as Timer
+@onready var wall_jump_buffer_timer: Timer = %WallJumpBuffer as Timer
 @onready var dash_cooldown_timer: Timer = %DashCooldown as Timer
 @onready var after_dash_gravity_timer: Timer = %AfterDashGravity as Timer
+
+func _physics_process(_delta: float) -> void:
+	_on_wall = is_on_wall()
 
 func get_facing_dir() -> float:
 	return -1.0 if flip_h else 1.0
@@ -123,6 +140,24 @@ func try_jump() -> void:
 	if Input.is_action_just_pressed("jump"):
 		jump()
 
+func try_coyote_jump() -> void:
+	if not jump_coyote_timer.is_stopped():
+		try_jump()
+
+func try_jump_buffer_timer() -> void:
+	if Input.is_action_just_pressed("jump"):
+		jump_buffer_timer.start()
+
+func try_buffer_jump() -> void:
+	if not jump_buffer_timer.is_stopped():
+		jump()
+
+func stop_jump_timers() -> void:
+	jump_coyote_timer.stop()
+	jump_buffer_timer.stop()
+	wall_jump_coyote_timer.stop()
+	wall_jump_buffer_timer.stop()
+
 func get_last_wall_dir() -> float:
 	return -signf(get_wall_normal().x)
 
@@ -154,9 +189,24 @@ func wall_jump() -> void:
 	
 	state_machine.activate_state_by_name.call_deferred("WallJumpState")
 
-func try_wall_jump() -> void:
-	if Input.is_action_just_pressed("jump") and is_on_wall():
+func try_wall_jump(ignore_wall: bool = false) -> void:
+	if Input.is_action_just_pressed("jump") and (is_on_wall() or ignore_wall):
 		wall_jump()
+
+func try_coyote_wall_jump() -> void:
+	if not wall_jump_coyote_timer.is_stopped():
+		try_wall_jump(true)
+
+func try_wall_jump_buffer_timer() -> void:
+	if Input.is_action_just_pressed("jump"):
+		wall_jump_buffer_timer.start()
+
+func _on_wall_entered() -> void:
+	if not wall_jump_buffer_timer.is_stopped():
+		wall_jump()
+
+func _on_wall_exited() -> void:
+	wall_jump_coyote_timer.start()
 
 func calculate_wall_jumping_dec() -> float:
 	var h_input_dir: float = signf(get_input_vector().x)

@@ -9,9 +9,12 @@ signal state_transitioned(previous_state, current_state)
 ## States managed by the state machine. This value is determined once on ready by the node's children and their child nodes.
 var states: Dictionary[StringName, State]
 
-@onready var active_state: State: set = activate_state
+@onready var active_state: State # This variable should only be edited using activate_state
 
 func _ready() -> void:
+	if target_node:
+		await target_node.ready
+	
 	add_child_states(self)
 	
 	states.make_read_only()
@@ -20,7 +23,7 @@ func _ready() -> void:
 		if default_state not in states.values():
 			push_error("Default state '%s' is missing in state machine '%s'." % [default_state.get_path(), get_path()])
 		else:
-			active_state = default_state
+			activate_state(default_state)
 
 func _process(delta: float) -> void:
 	if should_update():
@@ -52,9 +55,9 @@ func should_update() -> bool:
 func _is_state_active(state: State) -> bool:
 	return state == active_state
 
-func activate_state(state: State) -> void:
+func activate_state(state: State, pass_as_previous: State = null) -> void:
 	var next_state: State = state
-	var previous_state: State = active_state
+	var previous_state: State = pass_as_previous if pass_as_previous else active_state
 	
 	if next_state == previous_state:
 		return
@@ -72,11 +75,11 @@ func activate_state(state: State) -> void:
 	
 	state_transitioned.emit(previous_state, next_state)
 
-func activate_state_by_name(state_name: StringName) -> void:
+func activate_state_by_name(state_name: StringName, pass_as_previous: State = null) -> void:
 	var state: State = states.get(state_name)
 	
 	if not state:
 		push_error("Attempted to activate missing state '%s' by name in state machine '%s'." % [state_name, get_path()])
 		return
 	
-	active_state = state
+	activate_state(state, pass_as_previous)
