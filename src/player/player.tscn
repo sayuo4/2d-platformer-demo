@@ -39,6 +39,8 @@ jump_height = 112.0
 jump_time_to_peak = 0.4
 jump_time_to_land = 0.3
 max_up_velocity_ratio = 3.0
+jump_peak_boost = 100.0
+jump_peak_gravity_ratio = 0.7
 max_wall_slide_speed = 200.0
 down_held_wall_slide_ratio = 2.0
 wall_slide_acc = 50.0
@@ -116,6 +118,12 @@ script = ExtResource("11_ylhto")
 metadata/_custom_type_script = "uid://crbn04ab1d1vk"
 
 [node name="Timers" type="Node" parent="."]
+
+[node name="JumpPeakGravity" type="Timer" parent="Timers"]
+unique_name_in_owner = true
+process_callback = 0
+wait_time = 0.1
+one_shot = true
 
 [node name="JumpCoyote" type="Timer" parent="Timers"]
 unique_name_in_owner = true

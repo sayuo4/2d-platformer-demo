@@ -32,6 +32,8 @@ signal wall_exited
 @export_range(0.0, 1.0) var jump_time_to_peak: float
 @export_range(0.0, 1.0) var jump_time_to_land: float
 @export_range(1.0, 5.0) var max_up_velocity_ratio: float # Multiplied by jump_velocity
+@export var jump_peak_boost: float # Boost applied to horizontal velocity after reaching jump peak
+@export_range(0.0, 1.0) var jump_peak_gravity_ratio: float
 
 @export_group("On Wall")
 @export_subgroup("Wall Slide")
@@ -70,6 +72,7 @@ var _on_wall: bool = false: # This variable mustn't be edited manually
 @onready var shape: Node2D = $Shape as Node2D
 @onready var state_machine: StateMachine = $StateMachine as StateMachine
 
+@onready var jump_peak_gravity_timer: Timer = %JumpPeakGravity as Timer
 @onready var jump_coyote_timer: Timer = %JumpCoyote as Timer
 @onready var jump_buffer_timer: Timer = %JumpBuffer as Timer
 @onready var wall_jump_coyote_timer: Timer = %WallJumpCoyote as Timer
@@ -121,7 +124,8 @@ func get_default_gravity() -> float:
 
 func calculate_gravity() -> float:
 	return get_default_gravity() * (
-			after_dash_gravity_ratio if not after_dash_gravity_timer.is_stopped()
+			jump_peak_gravity_ratio if not jump_peak_gravity_timer.is_stopped()
+			else after_dash_gravity_ratio if not after_dash_gravity_timer.is_stopped()
 			else jump_not_held_gravity_ratio if not Input.is_action_pressed("jump")
 			else down_held_gravity_ratio if Input.is_action_pressed("down") and velocity.y > 0
 			else 1.0

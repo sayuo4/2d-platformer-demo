@@ -13,5 +13,7 @@ func _physics_update(delta: float) -> void:
 	
 	player.move_and_slide()
 	
-	if player.get_slide_collision_count() > 0 or player.velocity.y >= 0:
-		switch_to("AirEntryState")
+	if player.velocity.y >= 0:
+		switch_to("FallState")
+	if player.get_slide_collision_count() > 0:
+		switch_to("JumpState")
