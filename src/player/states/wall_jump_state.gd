@@ -11,6 +11,8 @@ func _physics_update(delta: float) -> void:
 	player.try_dash()
 	player.try_corner_correction(delta)
 	player.update_flip_h()
+	player.apply_move_anim()
+	player.update_shape_scale()
 	
 	player.move_and_slide()
 	

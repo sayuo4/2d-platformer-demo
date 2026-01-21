@@ -41,8 +41,8 @@ jump_time_to_land = 0.3
 max_up_velocity_ratio = 3.0
 jump_peak_boost = 100.0
 jump_peak_gravity_ratio = 0.7
-corner_correction_distance = 8.0
-oneway_platform_assist_distance = 4.0
+corner_correction_distance = 8
+oneway_platform_assist_distance = 4
 max_wall_slide_speed = 200.0
 down_held_wall_slide_ratio = 2.0
 wall_slide_acc = 50.0
@@ -55,6 +55,14 @@ dash_speed = 1200.0
 dash_distance = 125.0
 after_dash_speed = 300.0
 after_dash_gravity_ratio = 0.2
+max_move_skew = -6.0
+shape_rescale_weight = 0.2
+squash_width_scale_at_rest = 1.1
+squash_width_scale_at_max_fall = 1.4
+squash_height_scale_at_rest = 0.9
+squash_height_scale_at_max_fall = 0.6
+stretch_width_scale = 0.6
+stretch_height_scale = 1.2
 metadata/_edit_group_ = true
 
 [node name="Shape" type="Node2D" parent="."]

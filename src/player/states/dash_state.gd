@@ -23,6 +23,8 @@ func _exit(_next_state: State) -> void:
 	start_pos = Vector2.ZERO
 
 func _physics_update(_delta: float) -> void:
+	player.apply_move_anim()
+	
 	player.move_and_slide()
 	
 	if (start_pos.distance_to(player.global_position) >= player.dash_distance

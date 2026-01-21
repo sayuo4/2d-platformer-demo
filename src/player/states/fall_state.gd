@@ -21,6 +21,9 @@ func _physics_update(delta: float) -> void:
 	player.try_wall_jump_buffer_timer()
 	player.try_dash()
 	player.update_flip_h()
+	player.apply_move_anim()
+	player.try_squash(delta)
+	player.update_shape_scale()
 	
 	player.move_and_slide()
 	

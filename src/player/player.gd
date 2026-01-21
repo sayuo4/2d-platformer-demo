@@ -34,8 +34,8 @@ signal wall_exited
 @export_range(1.0, 5.0) var max_up_velocity_ratio: float # Multiplied by jump_velocity
 @export var jump_peak_boost: float # Boost applied to horizontal velocity after reaching jump peak
 @export_range(0.0, 1.0) var jump_peak_gravity_ratio: float
-@export var corner_correction_distance: float
-@export var oneway_platform_assist_distance: float
+@export var corner_correction_distance: int
+@export var oneway_platform_assist_distance: int
 
 @export_group("On Wall")
 @export_subgroup("Wall Slide")
@@ -56,6 +56,20 @@ signal wall_exited
 @export var dash_distance: float
 @export var after_dash_speed: float
 @export_range(0.0, 1.0) var after_dash_gravity_ratio: float
+
+@export_group("Animation")
+@export_range(-90.0, 90.0, 0.1, "degrees") var max_move_skew: float
+@export_range(0.0, 1.0) var shape_rescale_weight: float
+
+@export_subgroup("Squash")
+@export_range(1.0, 2.0) var squash_width_scale_at_rest: float
+@export_range(1.0, 2.0) var squash_width_scale_at_max_fall: float
+@export_range(0.0, 1.0) var squash_height_scale_at_rest: float
+@export_range(0.0, 1.0) var squash_height_scale_at_max_fall: float
+
+@export_subgroup("Stretch")
+@export_range(0.0, 1.0) var stretch_width_scale: float
+@export_range(1.0, 2.0) var stretch_height_scale: float
 
 var dash_allowed: bool = false
 var _on_wall: bool = false: # This variable mustn't be edited manually
@@ -82,6 +96,8 @@ var _on_wall: bool = false: # This variable mustn't be edited manually
 @onready var wall_jump_buffer_timer: Timer = %WallJumpBuffer as Timer
 @onready var dash_cooldown_timer: Timer = %DashCooldown as Timer
 @onready var after_dash_gravity_timer: Timer = %AfterDashGravity as Timer
+
+@onready var _default_shape_scale: Vector2 = shape.scale
 
 func _physics_process(_delta: float) -> void:
 	_on_wall = is_on_wall()
@@ -142,6 +158,7 @@ func calculate_gravity_limit() -> float:
 
 func jump() -> void:
 	velocity.y = jump_velocity
+	apply_stretch()
 
 func try_jump() -> void:
 	if Input.is_action_just_pressed("jump"):
@@ -190,6 +207,7 @@ func wall_jump() -> void:
 	
 	velocity.y = jump_velocity * wall_jump_v_velocity_ratio
 	velocity.x = wall_jump_h_velocity * wall_jump_dir
+	apply_stretch()
 	
 	state_machine.activate_state_by_name.call_deferred("WallJumpState")
 
@@ -267,3 +285,26 @@ func try_oneway_platform_assist() -> void:
 				translate(v_offset)
 			
 			return
+
+func apply_move_anim() -> void:
+	var max_move_skew_rad: float = deg_to_rad(max_move_skew)
+	
+	shape.skew = remap(velocity.x, -max_speed, max_speed, -max_move_skew_rad, max_move_skew_rad)
+
+func update_shape_scale() -> void:
+	shape.scale = shape.scale.lerp(_default_shape_scale * shape.scale.sign(), shape_rescale_weight)
+
+func apply_squash() -> void:
+	var max_fall_speed: float = calculate_gravity_limit()
+	
+	shape.scale.x *= remap(velocity.y, 0.0, max_fall_speed, squash_width_scale_at_rest, squash_width_scale_at_max_fall)
+	shape.scale.y *= remap(velocity.y, 0.0, max_fall_speed, squash_height_scale_at_max_fall, squash_height_scale_at_rest)
+
+func try_squash(delta: float) -> void:
+	var v_motion: Vector2 = Vector2(0.0, velocity.y * delta)
+	
+	if test_move(global_transform, v_motion):
+		apply_squash()
+
+func apply_stretch() -> void:
+	shape.scale *= Vector2(stretch_width_scale, stretch_height_scale)
