@@ -28,6 +28,6 @@ func _physics_update(_delta: float) -> void:
 	player.move_and_slide()
 	
 	if (start_pos.distance_to(player.global_position) >= player.dash_distance
-		or player.get_slide_collision_count() > 0
+		or player.is_on_wall()
 	):
 		switch_to("AirEntryState")
