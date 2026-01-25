@@ -33,7 +33,7 @@ func _physics_process(delta: float) -> void:
 	if should_update():
 		active_state._physics_update(delta)
 
-func add_child_states(node: Node):
+func add_child_states(node: Node) -> void:
 	for child in node.get_children():
 		var state: State = child as State
 		
