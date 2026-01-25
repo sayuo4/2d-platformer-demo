@@ -9,7 +9,7 @@ signal state_transitioned(previous_state, current_state)
 ## States managed by the state machine. This value is determined once on ready by the node's children and their child nodes.
 var states: Dictionary[StringName, State]
 
-@onready var active_state: State # This variable should only be edited using activate_state
+var active_state: State # This variable should only be edited using activate_state
 
 func _ready() -> void:
 	if target_node:
