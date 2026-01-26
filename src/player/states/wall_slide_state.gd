@@ -9,7 +9,7 @@ func _physics_update(delta: float) -> void:
 	player.try_wall_jump()
 	player.try_dash()
 	player.apply_move_anim()
-	player.update_shape_scale()
+	player.update_shape_scale(delta)
 	
 	player.move_and_slide()
 	

@@ -10,3 +10,4 @@ func _enter(previous_state: State) -> void:
 	player.try_buffer_jump()
 	player.stop_jump_timers()
 	player.dash_allowed = true
+	player.apply_squash()

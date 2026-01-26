@@ -6,7 +6,7 @@ func _physics_update(delta: float) -> void:
 	player.apply_movement(delta, player.running_acc_time, player.running_dec_time)
 	player.try_jump()
 	player.try_dash()
-	player.update_shape_scale()
+	player.update_shape_scale(delta)
 	
 	player.move_and_slide()
 	

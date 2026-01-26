@@ -293,20 +293,18 @@ func apply_move_anim() -> void:
 	
 	shape.skew = remap(velocity.x, -max_speed, max_speed, -max_move_skew_rad, max_move_skew_rad)
 
-func update_shape_scale() -> void:
-	shape.scale = shape.scale.lerp(_default_shape_scale * shape.scale.sign(), shape_rescale_weight)
+func update_shape_scale(delta: float) -> void:
+	var target: Vector2 = _default_shape_scale * shape.scale.sign()
+	var frame_weight: float = 1.0 - pow(1.0 - shape_rescale_weight, 60.0 * delta)
+	
+	shape.scale = shape.scale.lerp(target, frame_weight)
 
 func apply_squash() -> void:
 	var max_fall_speed: float = calculate_gravity_limit()
+	var vertical_speed: float = get_position_delta().y / get_physics_process_delta_time()
 	
-	shape.scale.x *= remap(velocity.y, 0.0, max_fall_speed, squash_width_scale_at_rest, squash_width_scale_at_max_fall)
-	shape.scale.y *= remap(velocity.y, 0.0, max_fall_speed, squash_height_scale_at_max_fall, squash_height_scale_at_rest)
-
-func try_squash(delta: float) -> void:
-	var v_motion: Vector2 = Vector2(0.0, velocity.y * delta)
-	
-	if test_move(global_transform, v_motion):
-		apply_squash()
+	shape.scale.x *= remap(vertical_speed, 0.0, max_fall_speed, squash_width_scale_at_rest, squash_width_scale_at_max_fall)
+	shape.scale.y *= remap(vertical_speed, 0.0, max_fall_speed, squash_height_scale_at_max_fall, squash_height_scale_at_rest)
 
 func apply_stretch() -> void:
 	shape.scale *= Vector2(stretch_width_scale, stretch_height_scale)
