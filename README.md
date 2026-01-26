@@ -25,7 +25,7 @@ A feature-rich 2D platformer controller made in [Godot Engine](https://godotengi
   ![One-Way Platform Example](.gdignore/GIFs/oneway_platform_example.gif)
 
 ## Requirements
-- **[Godot Engine v4.5.1-stable](https://github.com/godotengine/godot/releases/tag/4.5.1-stable)**
+- **[Godot Engine v4.6-stable](https://github.com/godotengine/godot/releases/tag/4.6-stable)**
 
 ## License
 - **This project is under the MIT License. See [LICENSE](LICENSE) for details.**

@@ -8,11 +8,15 @@
 
 config_version=5
 
+[animation]
+
+compatibility/default_parent_skeleton_in_mesh_instance_3d=true
+
 [application]
 
 config/name="2d-platformer-controller"
 config/description="A feature-rich 2D platformer controller."
-config/features=PackedStringArray("4.5", "GL Compatibility")
+config/features=PackedStringArray("4.6", "GL Compatibility")
 config/icon="uid://ch8u3rf8xate6"
 config/windows_native_icon="res://icons/icon.ico"
 
