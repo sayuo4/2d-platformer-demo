@@ -1,3 +1,5 @@
+**AI was used in this project to help with improving variable/method names, reviewing code and writing the README.**
+
 # 2D Platformer Controller
 A feature-rich 2D platformer controller made in [Godot Engine](https://godotengine.org/).
 
